@@ -1,63 +1,287 @@
-# AAST Computer Graphics Learning Portal
+<div align="center">
 
-A interactive web portal built for **Dr. Gouda Ismail's Computer Graphics course** at the Arab Academy for Science and Technology (AAST). The portal is designed with official AAST academic branding (Navy and Gold) to help students visually learn and trace fundamental graphics algorithms.
+# 📐 AAST Computer Graphics Portal
 
----
+### Interactive Learning Portal for Dr. Gouda Ismail's Computer Graphics Course
 
-## 🚀 Key Features
-
-1.  **Lectures & Sheets View**: Direct access to Weeks 1–11 slides and Sheets I–IV with detailed concepts summaries and formulas.
-2.  **Interactive Algorithm Visualizers**:
-    *   **Line Drawing**: DDA vs. Bresenham comparisons side-by-side with step-by-step trace tables and interactive pixel grids.
-    *   **Circle Drawing**: Midpoint circle algorithm with 8-way symmetry tracing.
-    *   **Ellipse Drawing**: Midpoint ellipse region-by-region visualizer.
-    *   **Region Filling**: 16x16 canvas with Boundary Fill & Flood Fill (4-connected vs. 8-connected) and a real-time recursion stack trace display.
-3.  **Practice Zone (Socratic Helper)**: Validates student calculations in trace tables cell-by-cell (green/red background) and provides adaptive hints without revealing direct answers immediately.
-4.  **AI Explainer Simulator**: Demonstrates how an AI agent chatbot provides explanations and hints using Socratic dialog aligned with course materials.
-5.  **Instructor Admin Panel**: A password-protected (`aast2026`) dashboard allowing Dr. Gouda to post announcements, modify lecture outlines, update exercises, and save them.
+*Built for the Arab Academy for Science, Technology & Maritime Transport (AAST)*
 
 ---
 
-## 🛠️ Getting Started (Local Development)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Components-000000?style=for-the-badge&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-181717?style=for-the-badge&logo=github&logoColor=white)](https://4awmy.github.io/computer-graphics-portal/)
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Portal-success?style=for-the-badge)](https://4awmy.github.io/computer-graphics-portal/)
 
-To run the application locally on your computer:
-
-1.  Open your terminal inside the `portal` directory.
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-4.  Open the local address in your browser (usually `http://localhost:5173`).
+</div>
 
 ---
 
-## 📝 Content Editing & Persistence
+## 📖 About
 
-The portal supports two saving mechanisms:
+The **AAST Computer Graphics Portal** is a full-featured, interactive web application designed to support students throughout Dr. Gouda Ismail's Computer Graphics course. It combines structured lecture content with hands-on algorithm visualizers, an adaptive practice zone, and a floating AI tutor — all in a single, unified interface.
 
-### A. Development Mode (Local Saving)
-When running `npm run dev` locally, the portal connects to a **Vite server middleware API**. When Dr. Gouda edits announcements, lectures, or exercises and clicks **"Save"**, the app writes the changes directly back to the database JSON files inside `src/data/` on the hard drive.
+The portal features a **password-protected Instructor Dashboard** that allows the course instructor to edit announcements, lecture content, and exercises directly from the UI in local development, with changes pushed to GitHub via a built-in Git sync workflow.
 
-### B. Production Mode (GitHub Pages Saving)
-GitHub Pages is a static hosting platform with no running database. When hosted on GitHub Pages:
-1.  Instructor edits will save to the browser's `localStorage` for immediate preview.
-2.  To make these changes permanent for all students, click the **"Download [file].json"** buttons on the dashboard.
-3.  Replace the corresponding file inside `src/data/` in your source code folder.
-4.  Commit and push the file to GitHub. The website will rebuild and deploy automatically!
+> 🌐 **Live Site:** [https://4awmy.github.io/computer-graphics-portal/](https://4awmy.github.io/computer-graphics-portal/)
 
 ---
 
-## 🌐 Deploying to GitHub Pages
+## 📸 Screenshots
 
-We have provided a automated deployment pipeline using GitHub Actions.
+<div align="center">
 
-### Setup Instructions:
-1.  Initialize a Git repository in the parent folder or inside `portal`.
-2.  Push the code to GitHub.
-3.  Go to your GitHub repository **Settings** -> **Pages**.
-4.  Under **Build and deployment**, select **GitHub Actions** as the source.
-5.  Pushing code to the `main` branch will automatically trigger the workflow in `.github/workflows/deploy.yml` which builds and deploys the site!
+| Lectures & Sheets | Practice Zone |
+|:-----------------:|:-------------:|
+| ![Lectures View](docs/screenshots/lectures_view.png) | ![Practice Zone](docs/screenshots/practice_zone.png) |
+
+| AI Tutor |
+|:--------:|
+| ![AI Tutor](docs/screenshots/ai_tutor.png) |
+
+</div>
+
+---
+
+## ✨ Features
+
+### 📚 Lectures & Sheets
+
+| Feature | Description |
+|---------|-------------|
+| **Weekly Slides** | Browse Weeks 1–11 lecture slides with inline PDF viewer |
+| **Practice Sheets** | Access Sheets I–IV with concise summaries and formula tables |
+| **Announcements** | Course-wide announcements pinned at the top of the view |
+| **Quick Navigation** | Jump directly from a lecture to its associated practice exercise |
+
+---
+
+### 🖥️ Algorithm Visualizers
+
+| Algorithm | Description |
+|-----------|-------------|
+| **DDA Line Drawing** | Step-through Digital Differential Analyzer rasterization |
+| **Bresenham's Line** | Integer-only Bresenham line algorithm with decision variable trace |
+| **Midpoint Circle** | Midpoint algorithm for circle rasterization |
+| **Midpoint Ellipse** | Two-region midpoint ellipse algorithm |
+| **Boundary Fill** | Recursive boundary-fill with live recursion stack trace |
+| **Flood Fill** | 4-connected flood fill with live recursion stack trace |
+
+---
+
+### 🧩 Practice Zone
+
+| Feature | Description |
+|---------|-------------|
+| **Trace Table Exercises** | Step-through exercises where students fill in algorithm trace tables |
+| **Cell-by-Cell Validation** | Socratic feedback that validates each cell individually |
+| **Adaptive Hints** | Progressive hints that guide without giving away the answer |
+| **Exercise Navigation** | Browse the full exercise library or jump directly from a lecture |
+
+---
+
+### 🤖 AI Tutor
+
+| Feature | Description |
+|---------|-------------|
+| **Floating Chat Interface** | Always-accessible AI tutor widget that doesn't interrupt navigation |
+| **Concept Explanations** | Explains rasterization, scan conversion, and filling concepts |
+| **Problem Guidance** | Walks through algorithm steps without solving directly |
+
+---
+
+### 🛡️ Instructor Dashboard
+
+| Feature | Description |
+|---------|-------------|
+| **Announcement Editor** | Add, edit, and remove course announcements |
+| **Lecture Outline Editor** | Update lecture titles, summaries, and linked resources |
+| **Exercise Editor** | Create and modify practice zone exercises and answer keys |
+| **Save to Disk** | Writes changes directly to `src/data/` JSON files (dev mode only) |
+| **Git Sync** | Commits and pushes changes to GitHub with a custom commit message |
+
+> **Note:** Save to Disk and Git Sync use Vite dev-server middleware and are only available in local development. On the deployed GitHub Pages site, all edits persist in the browser's `localStorage`.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                      React SPA (Vite)                    │
+│                                                          │
+│  ┌─────────────────┐   ┌──────────────┐                 │
+│  │  LecturesView   │   │  PracticeZone│                 │
+│  │  (Slides, PDFs) │   │  (Exercises) │                 │
+│  └─────────────────┘   └──────────────┘                 │
+│                                                          │
+│  ┌─────────────────┐   ┌──────────────────────────────┐ │
+│  │  Demos          │   │  InstructorDashboard          │ │
+│  │  (Visualizers)  │   │  (Password-protected editor)  │ │
+│  └─────────────────┘   └──────────────────────────────┘ │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  AITutorSim — Floating global chatbot widget     │   │
+│  └──────────────────────────────────────────────────┘   │
+│                                                          │
+│  State: React useState + localStorage persistence        │
+└──────────────────────────────────────────────────────────┘
+                          │
+          ┌───────────────▼───────────────┐
+          │  src/data/ (JSON)             │
+          │  lectures.json                │
+          │  exercises.json               │
+          │  announcements.json           │
+          └───────────────────────────────┘
+                          │
+          ┌───────────────▼───────────────┐
+          │  Vite Dev Middleware (local)   │
+          │  /api/save  → writes JSON     │
+          │  /api/git-sync → git push     │
+          └───────────────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Framework** | React 18 | Component-based UI |
+| **Language** | TypeScript 5 | Type-safe development |
+| **Build Tool** | Vite | Fast dev server + production build |
+| **Styling** | Tailwind CSS 3 | Utility-first CSS |
+| **UI Components** | shadcn/ui | Accessible, composable primitives |
+| **Icons** | Lucide React | Consistent icon set |
+| **Data** | JSON files | Static content database |
+| **Persistence** | localStorage | Client-side state between sessions |
+| **Deployment** | GitHub Actions + GitHub Pages | Automated CI/CD |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/4awmy/computer-graphics-portal.git
+cd computer-graphics-portal/portal
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### 4. Production Build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/` — ready to serve as a static site.
+
+---
+
+## 🌐 Deployment (GitHub Pages)
+
+The repo includes a GitHub Actions workflow at `.github/workflows/deploy.yml` that automatically builds and publishes the site on every push to `main`.
+
+### One-time setup
+
+1. Go to **Settings → Pages** in your GitHub repository.
+2. Under **Build and deployment**, select **GitHub Actions**.
+3. Click **Save** — the workflow will deploy automatically.
+
+---
+
+## 📁 Project Structure
+
+```
+portal/
+│
+├── public/                      # Static assets (favicon, icons)
+│
+├── src/
+│   ├── components/
+│   │   ├── Navigation.tsx        # Top navigation bar
+│   │   ├── LecturesView.tsx      # Lectures & Sheets tab
+│   │   ├── PracticeZone.tsx      # Practice exercises tab
+│   │   ├── Demos.tsx             # Algorithm visualizers
+│   │   ├── AITutorSim.tsx        # Floating AI tutor widget
+│   │   └── InstructorDashboard.tsx  # Password-protected editor
+│   │
+│   └── data/
+│       ├── lectures.json         # Lecture content & metadata
+│       ├── exercises.json        # Practice zone exercises
+│       └── announcements.json   # Course announcements
+│
+├── docs/
+│   └── screenshots/             # Portal screenshots
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # GitHub Pages CI/CD pipeline
+│
+├── vite.config.ts                # Vite config + dev-server API middleware
+├── tailwind.config.ts
+└── package.json
+```
+
+---
+
+## 👥 Authors & Credits
+
+<div align="center">
+
+| Name | Role |
+|------|------|
+| **Omar Hossam** | Developer — Architecture, UI, Visualizers |
+
+*Built for:*
+
+**🏛️ Arab Academy for Science, Technology & Maritime Transport (AAST)**
+**College of Computing and Information Technology**
+**Dr. Gouda Ismail — Computer Graphics**
+
+</div>
+
+---
+
+## 🔗 Links
+
+| Resource | URL |
+|----------|-----|
+| 🌐 Live Portal | [4awmy.github.io/computer-graphics-portal](https://4awmy.github.io/computer-graphics-portal/) |
+| 📦 GitHub Repository | [github.com/4awmy/computer-graphics-portal](https://github.com/4awmy/computer-graphics-portal) |
+
+---
+
+## 📄 License
+
+MIT License — see `LICENSE` for details.
+
+---
+
+<div align="center">
+
+*Built with ❤️ at AAST · Powered by React, TypeScript, Vite & Tailwind CSS*
+
+</div>

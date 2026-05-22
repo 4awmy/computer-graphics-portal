@@ -20,6 +20,8 @@ interface Exercise {
 
 interface PracticeZoneProps {
   exercises: Exercise[];
+  selectedExerciseId: string | null;
+  setSelectedExerciseId: (id: string | null) => void;
 }
 
 interface ExerciseWorkspaceProps {
@@ -335,46 +337,113 @@ const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({ exercise }) => {
   );
 };
 
-export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
-  const [selectedExId, setSelectedExId] = useState<string>(exercises[0]?.id || '');
-  const activeExercise = exercises.find((ex) => ex.id === selectedExId) || exercises[0];
+export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises, selectedExerciseId, setSelectedExerciseId }) => {
+  const sheets = [
+    { id: 'sheet1', title: 'Sheet I - Line Drawing Algorithms', pdfUrl: 'Section/Section/Sheet I - Line Drawing Algorithms.pdf' },
+    { id: 'sheet2', title: 'Sheet II - Circle Drawing Algorithm', pdfUrl: 'Section/Section/Sheet II - Circle Drawing Algorithm.pdf' },
+    { id: 'sheet3', title: 'Sheet III - Elipse Drawing Algorithm', pdfUrl: 'Section/Section/Sheet III - Elipse Drawing Algorithm.pdf' },
+    { id: 'sheet4', title: 'Sheet IV - Region Filling', pdfUrl: 'Section/Section/Sheet IV - Region Filling.pdf' }
+  ];
 
-  if (!activeExercise) {
-    return <div className="text-center py-8 text-slate-500">No exercises loaded.</div>;
-  }
+  const currentExId = selectedExerciseId || exercises[0]?.id || '';
+
+  const handleSelect = (id: string) => {
+    setSelectedExerciseId(id);
+  };
+
+  const activeExercise = exercises.find((ex) => ex.id === currentExId);
+  const activeSheet = sheets.find((s) => s.id === currentExId);
+
+  const isSheetSelected = !!activeSheet;
+  const displayExercise = activeExercise || (!isSheetSelected ? exercises[0] : null);
 
   return (
-    <div className="space-y-6 animate-fade">
+    <div className="space-y-6 animate-fade-in">
       
       {/* Selector and problem statement */}
       <div className="grid gap-6 md:grid-cols-3">
         
         {/* Exercises Select Sidebar */}
         <div className="md:col-span-1 space-y-4">
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <h3 className="font-bold text-aast-navy text-xs uppercase tracking-wider">Select Exercise</h3>
-            <div className="flex flex-col space-y-1">
-              {exercises.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => setSelectedExId(ex.id)}
-                  className={`text-left px-3 py-2 text-xs font-semibold rounded-lg transition-all flex justify-between items-center ${
-                    selectedExId === ex.id
-                      ? 'bg-aast-navy text-aast-gold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  <span>{ex.title}</span>
-                  <ChevronRight className="h-3 w-3" />
-                </button>
-              ))}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            
+            {/* Group 1: Interactive Trace Exercises */}
+            <div className="space-y-2">
+              <h3 className="font-bold text-aast-navy text-[11px] uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center justify-between">
+                <span>Interactive Tracing</span>
+                <span className="text-[9px] text-slate-400 font-mono font-medium">Table-based</span>
+              </h3>
+              <div className="flex flex-col space-y-1">
+                {exercises.map((ex) => (
+                  <button
+                    key={ex.id}
+                    onClick={() => handleSelect(ex.id)}
+                    className={`text-left px-3 py-2 text-xs font-semibold rounded-lg transition-all flex justify-between items-center ${
+                      currentExId === ex.id
+                        ? 'bg-aast-navy text-aast-gold shadow-sm font-bold'
+                        : 'text-slate-650 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="truncate">{ex.title}</span>
+                    <ChevronRight className="h-3 w-3 shrink-0 ml-1" />
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Group 2: Laboratory Sheets */}
+            <div className="space-y-2">
+              <h3 className="font-bold text-aast-navy text-[11px] uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center justify-between">
+                <span>Laboratory Sheets</span>
+                <span className="text-[9px] text-slate-400 font-mono font-medium">Original PDFs</span>
+              </h3>
+              <div className="flex flex-col space-y-1">
+                {sheets.map((sheet) => (
+                  <button
+                    key={sheet.id}
+                    onClick={() => handleSelect(sheet.id)}
+                    className={`text-left px-3 py-2 text-xs font-semibold rounded-lg transition-all flex justify-between items-center ${
+                      currentExId === sheet.id
+                        ? 'bg-aast-navy text-aast-gold shadow-sm font-bold'
+                        : 'text-slate-650 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="truncate">{sheet.title.replace('Algorithms', 'Algs').replace('Algorithm', 'Alg')}</span>
+                    <ChevronRight className="h-3 w-3 shrink-0 ml-1" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
 
         {/* Exercises Work Space */}
         <div className="md:col-span-2">
-          <ExerciseWorkspace key={activeExercise.id} exercise={activeExercise} />
+          {activeSheet ? (
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[750px] animate-fade-in">
+              <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700">{activeSheet.title}</span>
+                <a
+                  href={`./${activeSheet.pdfUrl}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center space-x-1.5 px-3 py-1 bg-aast-navy-soft text-aast-navy hover:bg-aast-navy hover:text-white rounded-lg font-bold text-xs transition-colors border border-aast-navy/10"
+                >
+                  <span>Open PDF</span>
+                </a>
+              </div>
+              <iframe
+                src={`./${activeSheet.pdfUrl}`}
+                className="w-full flex-1 border-0"
+                title={activeSheet.title}
+              />
+            </div>
+          ) : (
+            displayExercise && (
+              <ExerciseWorkspace key={displayExercise.id} exercise={displayExercise} />
+            )
+          )}
         </div>
 
       </div>

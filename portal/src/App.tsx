@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navigation } from './components/Navigation';
 import { LecturesView } from './components/LecturesView';
-import { Demos } from './components/Demos';
 import { PracticeZone } from './components/PracticeZone';
 import { AITutorSim } from './components/AITutorSim';
 import { InstructorDashboard } from './components/InstructorDashboard';
@@ -14,6 +13,7 @@ import initialExercises from './data/exercises.json';
 function App() {
   const [activeTab, setActiveTab] = useState<string>('lectures');
   const [isInstructorMode, setIsInstructorMode] = useState<boolean>(false);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
 
   // Load state from local storage or fallback to static json databases
   const [lectures, setLectures] = useState<Lecture[]>(() => {
@@ -54,6 +54,11 @@ function App() {
     }
   };
 
+  const handleNavigateToExercise = (exerciseId: string) => {
+    setActiveTab('practice');
+    setSelectedExerciseId(exerciseId);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       
@@ -70,14 +75,20 @@ function App() {
         
         {/* Render Tab Views */}
         {activeTab === 'lectures' && (
-          <LecturesView lectures={lectures} announcements={announcements} />
+          <LecturesView 
+            lectures={lectures} 
+            announcements={announcements} 
+            onNavigateToExercise={handleNavigateToExercise} 
+          />
         )}
         
-        {activeTab === 'demos' && <Demos />}
-        
-        {activeTab === 'practice' && <PracticeZone exercises={exercises} />}
-        
-        {activeTab === 'ai-tutor' && <AITutorSim />}
+        {activeTab === 'practice' && (
+          <PracticeZone 
+            exercises={exercises} 
+            selectedExerciseId={selectedExerciseId}
+            setSelectedExerciseId={setSelectedExerciseId}
+          />
+        )}
         
         {activeTab === 'instructor' && (
           <InstructorDashboard
@@ -90,6 +101,9 @@ function App() {
           />
         )}
       </main>
+
+      {/* AITutor floating globally */}
+      <AITutorSim />
 
       {/* AAST Academic Footer */}
       <footer className="w-full border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-500">

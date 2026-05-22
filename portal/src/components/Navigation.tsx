@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Play, CheckSquare, MessageSquare, ShieldAlert, Award } from 'lucide-react';
+import { BookOpen, CheckSquare, ShieldAlert, Award } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -16,9 +16,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const navItems = [
     { id: 'lectures', label: 'Lectures & Sheets', icon: BookOpen },
-    { id: 'demos', label: 'Interactive Demos', icon: Play },
     { id: 'practice', label: 'Practice Zone', icon: CheckSquare },
-    { id: 'ai-tutor', label: 'AI Explainer', icon: MessageSquare },
   ];
 
   return (
