@@ -5,6 +5,7 @@ import { Demos } from './components/Demos';
 import { PracticeZone } from './components/PracticeZone';
 import { AITutorSim } from './components/AITutorSim';
 import { InstructorDashboard } from './components/InstructorDashboard';
+import type { Lecture, Announcement, Exercise } from './components/InstructorDashboard';
 
 import initialLectures from './data/lectures.json';
 import initialAnnouncements from './data/announcements.json';
@@ -15,19 +16,19 @@ function App() {
   const [isInstructorMode, setIsInstructorMode] = useState<boolean>(false);
 
   // Load state from local storage or fallback to static json databases
-  const [lectures, setLectures] = useState<any[]>(() => {
+  const [lectures, setLectures] = useState<Lecture[]>(() => {
     const saved = localStorage.getItem('aast_cg_lectures');
-    return saved ? JSON.parse(saved) : initialLectures;
+    return saved ? JSON.parse(saved) as Lecture[] : initialLectures as unknown as Lecture[];
   });
 
-  const [announcements, setAnnouncements] = useState<any[]>(() => {
+  const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
     const saved = localStorage.getItem('aast_cg_announcements');
-    return saved ? JSON.parse(saved) : initialAnnouncements;
+    return saved ? JSON.parse(saved) as Announcement[] : initialAnnouncements as unknown as Announcement[];
   });
 
-  const [exercises, setExercises] = useState<any[]>(() => {
+  const [exercises, setExercises] = useState<Exercise[]>(() => {
     const saved = localStorage.getItem('aast_cg_exercises');
-    return saved ? JSON.parse(saved) : initialExercises;
+    return saved ? JSON.parse(saved) as Exercise[] : initialExercises as unknown as Exercise[];
   });
 
   // Sync to local storage on changes

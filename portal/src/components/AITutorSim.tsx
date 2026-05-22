@@ -8,13 +8,23 @@ interface Message {
   timestamp: string;
 }
 
+let messageCounter = 0;
+const generateMessageId = (prefix: string): string => {
+  messageCounter++;
+  return `${prefix}_${messageCounter}_${Date.now()}`;
+};
+
+const getCurrentTimestamp = (): string => {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
 export const AITutorSim: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'msg_welcome',
       sender: 'ai',
       text: "Hello! I am your AI Computer Graphics Tutor. I'm trained on Dr. Gouda Ismail's lecture slides. You can ask me questions about line-drawing, circle-drawing, clipping, spline curves, filling, or 2D/3D transformations. How can I help you study today?",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp: getCurrentTimestamp()
     }
   ]);
   const [inputVal, setInputVal] = useState<string>('');
@@ -48,10 +58,10 @@ export const AITutorSim: React.FC = () => {
     if (!text.trim()) return;
 
     const studentMsg: Message = {
-      id: `msg_stud_${Date.now()}`,
+      id: generateMessageId('msg_stud'),
       sender: 'student',
       text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp: getCurrentTimestamp()
     };
 
     setMessages((prev) => [...prev, studentMsg]);
@@ -75,10 +85,10 @@ export const AITutorSim: React.FC = () => {
       }
 
       const aiMsg: Message = {
-        id: `msg_ai_${Date.now()}`,
+        id: generateMessageId('msg_ai'),
         sender: 'ai',
         text: matchedAns,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        timestamp: getCurrentTimestamp()
       };
 
       setMessages((prev) => [...prev, aiMsg]);

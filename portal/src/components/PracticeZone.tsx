@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { HelpCircle, Eye, RefreshCw, CheckCircle, ChevronRight, XCircle } from 'lucide-react';
 
 interface ExerciseStep {
@@ -13,7 +13,7 @@ interface Exercise {
   type: 'line_bresenham' | 'circle_midpoint';
   title: string;
   description: string;
-  params: any;
+  params: Record<string, number>;
   hint: string;
   steps: ExerciseStep[];
 }
@@ -22,24 +22,14 @@ interface PracticeZoneProps {
   exercises: Exercise[];
 }
 
-export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
-  const [selectedExId, setSelectedExId] = useState<string>(exercises[0]?.id || '');
+interface ExerciseWorkspaceProps {
+  exercise: Exercise;
+}
+
+const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({ exercise }) => {
   const [showHint, setShowHint] = useState<boolean>(false);
   const [studentAnswers, setStudentAnswers] = useState<Record<string, string>>({});
   const [revealSolution, setRevealSolution] = useState<boolean>(false);
-
-  const activeExercise = exercises.find((ex) => ex.id === selectedExId) || exercises[0];
-
-  useEffect(() => {
-    // Reset answers when changing exercise
-    setStudentAnswers({});
-    setShowHint(false);
-    setRevealSolution(false);
-  }, [selectedExId]);
-
-  if (!activeExercise) {
-    return <div className="text-center py-8 text-slate-500">No exercises loaded.</div>;
-  }
 
   const handleInputChange = (stepIdx: number, field: string, val: string) => {
     setStudentAnswers((prev) => ({
@@ -48,7 +38,7 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
     }));
   };
 
-  const getCellStatus = (stepIdx: number, field: string, expectedVal: any) => {
+  const getCellStatus = (stepIdx: number, field: string, expectedVal: number | string) => {
     if (revealSolution) return 'correct';
     
     const key = `${stepIdx}-${field}`;
@@ -66,7 +56,7 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
     setRevealSolution(true);
     // Pre-fill answers in local state
     const prefilled: Record<string, string> = {};
-    activeExercise.steps.forEach((step, idx) => {
+    exercise.steps.forEach((step, idx) => {
       prefilled[`${idx}-pk`] = String(step.pk);
       prefilled[`${idx}-x`] = String(step.x);
       prefilled[`${idx}-y`] = String(step.y);
@@ -82,7 +72,7 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
 
   // Check if entire exercise is solved correctly
   const isFullySolved = () => {
-    return activeExercise.steps.every((step, idx) => {
+    return exercise.steps.every((step, idx) => {
       const pkStatus = getCellStatus(idx, 'pk', step.pk);
       const xStatus = getCellStatus(idx, 'x', step.x);
       const yStatus = getCellStatus(idx, 'y', step.y);
@@ -93,11 +83,11 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
   // Determine grid pixels from correct coordinates
   const getGridPixels = () => {
     const pixels = Array(20).fill(null).map(() => Array(20).fill('empty'));
-    const isCircle = activeExercise.type === 'circle_midpoint';
+    const isCircle = exercise.type === 'circle_midpoint';
     const cx = 10; // visual center offset
     const cy = 10;
 
-    activeExercise.steps.forEach((step, idx) => {
+    exercise.steps.forEach((step, idx) => {
       // Only plot if coords are correct (or solutions revealed)
       const xCorrect = getCellStatus(idx, 'x', step.x) === 'correct';
       const yCorrect = getCellStatus(idx, 'y', step.y) === 'correct';
@@ -137,65 +127,44 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
   };
 
   return (
-    <div className="space-y-6 animate-fade">
+    <div className="space-y-6">
       
-      {/* Selector and problem statement */}
       <div className="grid gap-6 md:grid-cols-3">
-        
-        {/* Exercises Select Sidebar */}
+        {/* Action buttons sidebar section */}
         <div className="md:col-span-1 space-y-4">
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <h3 className="font-bold text-aast-navy text-xs uppercase tracking-wider">Select Exercise</h3>
-            <div className="flex flex-col space-y-1">
-              {exercises.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => setSelectedExId(ex.id)}
-                  className={`text-left px-3 py-2 text-xs font-semibold rounded-lg transition-all flex justify-between items-center ${
-                    selectedExId === ex.id
-                      ? 'bg-aast-navy text-aast-gold'
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  <span>{ex.title}</span>
-                  <ChevronRight className="h-3 w-3" />
-                </button>
-              ))}
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setShowHint(!showHint)}
+                className="flex-1 py-1.5 px-3 border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-lg flex items-center justify-center space-x-1.5"
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                <span>{showHint ? 'Hide Hint' : 'Show Hint'}</span>
+              </button>
+              <button
+                onClick={revealAllAnswers}
+                className="flex-1 py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-xs font-bold text-white rounded-lg flex items-center justify-center space-x-1.5 shadow"
+              >
+                <Eye className="h-3.5 w-3.5" />
+                <span>Solve For Me</span>
+              </button>
             </div>
-          </div>
 
-          {/* Action buttons */}
-          <div className="flex space-x-2">
             <button
-              onClick={() => setShowHint(!showHint)}
-              className="flex-1 py-1.5 px-3 border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-lg flex items-center justify-center space-x-1.5"
+              onClick={resetExercise}
+              className="w-full py-1.5 border border-dashed border-red-200 text-red-500 text-xs font-bold hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center space-x-1"
             >
-              <HelpCircle className="h-3.5 w-3.5" />
-              <span>{showHint ? 'Hide Hint' : 'Show Hint'}</span>
-            </button>
-            <button
-              onClick={revealAllAnswers}
-              className="flex-1 py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-xs font-bold text-white rounded-lg flex items-center justify-center space-x-1.5 shadow"
-            >
-              <Eye className="h-3.5 w-3.5" />
-              <span>Solve For Me</span>
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Reset Tracing Table</span>
             </button>
           </div>
-
-          <button
-            onClick={resetExercise}
-            className="w-full py-1.5 border border-dashed border-red-200 text-red-500 text-xs font-bold hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center space-x-1"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Reset Tracing Table</span>
-          </button>
         </div>
 
         {/* Exercises Work Space */}
         <div className="md:col-span-2 space-y-4">
           <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
             <div className="flex justify-between items-start">
-              <h2 className="text-lg font-bold text-aast-navy">{activeExercise.title}</h2>
+              <h2 className="text-lg font-bold text-aast-navy">{exercise.title}</h2>
               {isFullySolved() && (
                 <div className="flex items-center space-x-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[10px] font-black uppercase">
                   <CheckCircle className="h-3 w-3" />
@@ -205,18 +174,17 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
             </div>
             
             <p className="text-xs text-slate-600 leading-relaxed">
-              {activeExercise.description}
+              {exercise.description}
             </p>
 
             {/* Hint Panel */}
             {showHint && (
               <div className="bg-aast-gold-soft border-l-4 border-aast-gold p-3 rounded-r-lg text-xs text-aast-gold-dark leading-relaxed animate-fade">
-                <strong>Instructor Hint:</strong> {activeExercise.hint}
+                <strong>Instructor Hint:</strong> {exercise.hint}
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       {/* Main Tracing Interactive Table */}
@@ -237,7 +205,7 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
                 </tr>
               </thead>
               <tbody>
-                {activeExercise.steps.map((step, idx) => {
+                {exercise.steps.map((step, idx) => {
                   const pkStatus = getCellStatus(idx, 'pk', step.pk);
                   const xStatus = getCellStatus(idx, 'x', step.x);
                   const yStatus = getCellStatus(idx, 'y', step.y);
@@ -328,7 +296,7 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
               row.map((status, cIdx) => {
                 const actualY = 19 - rIdx;
                 const actualX = cIdx;
-                const isCircle = activeExercise.type === 'circle_midpoint';
+                const isCircle = exercise.type === 'circle_midpoint';
                 
                 // Set offset display for circle
                 const label = isCircle 
@@ -359,6 +327,54 @@ export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
               <span>Empty Pixel</span>
             </div>
           </div>
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
+
+export const PracticeZone: React.FC<PracticeZoneProps> = ({ exercises }) => {
+  const [selectedExId, setSelectedExId] = useState<string>(exercises[0]?.id || '');
+  const activeExercise = exercises.find((ex) => ex.id === selectedExId) || exercises[0];
+
+  if (!activeExercise) {
+    return <div className="text-center py-8 text-slate-500">No exercises loaded.</div>;
+  }
+
+  return (
+    <div className="space-y-6 animate-fade">
+      
+      {/* Selector and problem statement */}
+      <div className="grid gap-6 md:grid-cols-3">
+        
+        {/* Exercises Select Sidebar */}
+        <div className="md:col-span-1 space-y-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <h3 className="font-bold text-aast-navy text-xs uppercase tracking-wider">Select Exercise</h3>
+            <div className="flex flex-col space-y-1">
+              {exercises.map((ex) => (
+                <button
+                  key={ex.id}
+                  onClick={() => setSelectedExId(ex.id)}
+                  className={`text-left px-3 py-2 text-xs font-semibold rounded-lg transition-all flex justify-between items-center ${
+                    selectedExId === ex.id
+                      ? 'bg-aast-navy text-aast-gold'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{ex.title}</span>
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Exercises Work Space */}
+        <div className="md:col-span-2">
+          <ExerciseWorkspace key={activeExercise.id} exercise={activeExercise} />
         </div>
 
       </div>

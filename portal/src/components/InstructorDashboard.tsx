@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Lock, Save, Download, Plus, Trash2, Edit2, AlertCircle } from 'lucide-react';
 
-interface Announcement {
+export interface Announcement {
   id: string;
   date: string;
   title: string;
@@ -9,12 +9,12 @@ interface Announcement {
   pinned: boolean;
 }
 
-interface LectureDetail {
+export interface LectureDetail {
   title: string;
   content: string;
 }
 
-interface Lecture {
+export interface Lecture {
   id: string;
   week: string;
   title: string;
@@ -24,19 +24,19 @@ interface Lecture {
   keyDetails: LectureDetail[];
 }
 
-interface ExerciseStep {
+export interface ExerciseStep {
   k: number;
   pk: number | string;
   x: number;
   y: number;
 }
 
-interface Exercise {
+export interface Exercise {
   id: string;
   type: 'line_bresenham' | 'circle_midpoint';
   title: string;
   description: string;
-  params: any;
+  params: Record<string, number>;
   hint: string;
   steps: ExerciseStep[];
 }
@@ -82,7 +82,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
     }
   };
 
-  const handleSaveToDisk = async (filename: string, data: any) => {
+  const handleSaveToDisk = async (filename: string, data: unknown) => {
     setSaveStatus({ type: 'idle' });
     try {
       const response = await fetch('/api/save', {
@@ -96,7 +96,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       } else {
         throw new Error(result.error);
       }
-    } catch (err: any) {
+    } catch {
       // Fallback for static GitHub Pages environments
       setSaveStatus({ 
         type: 'local_fallback', 
@@ -105,7 +105,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
     }
   };
 
-  const triggerFileDownload = (filename: string, data: any) => {
+  const triggerFileDownload = (filename: string, data: unknown) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -153,7 +153,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
   };
 
   // --- Lectures Actions ---
-  const handleLectureFieldChange = (lecId: string, field: keyof Lecture, val: any) => {
+  const handleLectureFieldChange = <K extends keyof Lecture>(lecId: string, field: K, val: Lecture[K]) => {
     const updated = lectures.map(lec => 
       lec.id === lecId ? { ...lec, [field]: val } : lec
     );
@@ -165,7 +165,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
   };
 
   // --- Exercises Actions ---
-  const handleExerciseFieldChange = (exId: string, field: keyof Exercise, val: any) => {
+  const handleExerciseFieldChange = <K extends keyof Exercise>(exId: string, field: K, val: Exercise[K]) => {
     const updated = exercises.map(ex => 
       ex.id === exId ? { ...ex, [field]: val } : ex
     );
@@ -237,15 +237,15 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
       {/* Editor Panel Navigation tabs */}
       <div className="flex justify-between items-center bg-white p-3.5 border border-slate-200 rounded-xl shadow-sm">
         <div className="flex space-x-2">
-          {[
+          {([
             { id: 'announcements', label: 'Announcements Board' },
             { id: 'lectures', label: 'Lecture Timeline' },
             { id: 'exercises', label: 'Student Practice Exercises' }
-          ].map((panel) => (
+          ] as const).map((panel) => (
             <button
               key={panel.id}
               onClick={() => {
-                setActivePanel(panel.id as any);
+                setActivePanel(panel.id);
                 setSaveStatus({ type: 'idle' });
               }}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
@@ -465,7 +465,7 @@ export const InstructorDashboard: React.FC<InstructorDashboardProps> = ({
                     <label className="text-[10px] uppercase font-bold text-slate-450 block mb-1">Algorithm Category</label>
                     <select
                       value={ex.type}
-                      onChange={(e) => handleExerciseFieldChange(ex.id, 'type', e.target.value as any)}
+                      onChange={(e) => handleExerciseFieldChange(ex.id, 'type', e.target.value as 'line_bresenham' | 'circle_midpoint')}
                       className="w-full text-xs px-2 py-1 bg-white border border-slate-200 rounded font-semibold"
                     >
                       <option value="line_bresenham">Bresenham's Line</option>

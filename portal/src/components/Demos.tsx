@@ -1,5 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { Play, RotateCcw, AlertCircle, Compass } from 'lucide-react';
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface LineStep {
+  k: number;
+  pk: string | number;
+  x: number;
+  y: number;
+  plotX?: number;
+  plotY?: number;
+}
+
+interface CircleStep {
+  k: number;
+  pk: number;
+  x: number;
+  y: number;
+  points: Point[];
+}
+
+interface EllipseStep {
+  k: number;
+  region: number;
+  pk: number;
+  x: number;
+  y: number;
+  points: Point[];
+}
 
 export const Demos: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'line' | 'circle' | 'ellipse' | 'fill'>('line');
@@ -7,15 +38,12 @@ export const Demos: React.FC = () => {
   // --- Line Drawing Visualizer State ---
   const [lineParams, setLineParams] = useState({ x1: 2, y1: 3, x2: 12, y2: 9 });
   const [lineAlg, setLineAlg] = useState<'dda' | 'bresenham'>('bresenham');
-  const [lineSteps, setLineSteps] = useState<any[]>([]);
 
   // --- Circle Drawing State ---
   const [circleParams, setCircleParams] = useState({ xc: 0, yc: 0, r: 8 });
-  const [circleSteps, setCircleSteps] = useState<any[]>([]);
 
   // --- Ellipse Drawing State ---
   const [ellipseParams, setEllipseParams] = useState({ xc: 0, yc: 0, rx: 8, ry: 5 });
-  const [ellipseSteps, setEllipseSteps] = useState<any[]>([]);
 
   // --- Region Filling State ---
   const GRID_SIZE = 16;
@@ -27,16 +55,16 @@ export const Demos: React.FC = () => {
   const [fillSpeed, setFillSpeed] = useState<number>(300); // ms
   const [isFilling, setIsFilling] = useState<boolean>(false);
   const [fillMode, setFillMode] = useState<'draw-wall' | 'set-seed'>('draw-wall');
-  const [seedPoint, setSeedPoint] = useState<{ x: number; y: number } | null>(null);
-  const [fillStack, setFillStack] = useState<{ x: number; y: number }[]>([]);
+  const [seedPoint, setSeedPoint] = useState<Point | null>(null);
+  const [fillStack, setFillStack] = useState<Point[]>([]);
 
-  const fillTimeoutRef = useRef<any>(null);
+  const fillTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Run line algorithms
-  useEffect(() => {
+  // --- Line Drawing Visualizer Calculations ---
+  const lineSteps = useMemo<LineStep[]>(() => {
     const { x1, y1, x2, y2 } = lineParams;
+    const steps: LineStep[] = [];
     if (lineAlg === 'dda') {
-      const steps = [];
       const dx = x2 - x1;
       const dy = y2 - y1;
       const stepsCount = Math.max(Math.abs(dx), Math.abs(dy));
@@ -47,6 +75,7 @@ export const Demos: React.FC = () => {
       for (let k = 0; k <= stepsCount; k++) {
         steps.push({
           k,
+          pk: 'N/A',
           x: Number(x.toFixed(2)),
           y: Number(y.toFixed(2)),
           plotX: Math.round(x),
@@ -55,10 +84,8 @@ export const Demos: React.FC = () => {
         x += xInc;
         y += yInc;
       }
-      setLineSteps(steps);
     } else {
       // Bresenham's (Standard 0 <= m <= 1)
-      const steps = [];
       const dx = x2 - x1;
       const dy = y2 - y1;
       
@@ -90,7 +117,6 @@ export const Demos: React.FC = () => {
           steps.push({ k, pk: err, x, y });
           if (k > 50) break;
         }
-        setLineSteps(steps);
       } else {
         let x = x1;
         let y = y1;
@@ -121,21 +147,21 @@ export const Demos: React.FC = () => {
             y
           });
         }
-        setLineSteps(steps);
       }
     }
+    return steps;
   }, [lineParams, lineAlg]);
 
-  // Run Midpoint Circle Algorithm
-  useEffect(() => {
+  // --- Circle Drawing Calculations ---
+  const circleSteps = useMemo<CircleStep[]>(() => {
     const { r } = circleParams;
-    const steps = [];
+    const steps: CircleStep[] = [];
     let x = 0;
     let y = r;
     let p = 1 - r;
     let k = 0;
 
-    const getSymmetricPoints = (cx: number, cy: number) => [
+    const getSymmetricPoints = (cx: number, cy: number): Point[] => [
       { x: cx, y: cy },
       { x: cy, y: cx },
       { x: -cy, y: cx },
@@ -173,13 +199,13 @@ export const Demos: React.FC = () => {
       });
       if (k > 50) break;
     }
-    setCircleSteps(steps);
+    return steps;
   }, [circleParams]);
 
-  // Run Midpoint Ellipse Algorithm
-  useEffect(() => {
+  // --- Ellipse Drawing Calculations ---
+  const ellipseSteps = useMemo<EllipseStep[]>(() => {
     const { rx, ry } = ellipseParams;
-    const steps = [];
+    const steps: EllipseStep[] = [];
     let k = 0;
     
     // Region 1
@@ -189,7 +215,7 @@ export const Demos: React.FC = () => {
     let dx = 2 * ry * ry * x;
     let dy = 2 * rx * rx * y;
 
-    const getSymmetricPoints = (cx: number, cy: number) => [
+    const getSymmetricPoints = (cx: number, cy: number): Point[] => [
       { x: cx, y: cy },
       { x: -cx, y: cy },
       { x: cx, y: -cy },
@@ -253,7 +279,7 @@ export const Demos: React.FC = () => {
       });
       if (k > 50) break;
     }
-    setEllipseSteps(steps);
+    return steps;
   }, [ellipseParams]);
 
   // --- Region Filling Functions ---
@@ -298,18 +324,16 @@ export const Demos: React.FC = () => {
     const gridCopy = fillGrid.map(row => [...row]);
     
     // Boundary vs Flood parameters
-    // In boundary fill, we assume "wall" is boundary
-    // In flood fill, we replace "empty" with "filled"
-    const stack: { x: number; y: number }[] = [{ ...seedPoint }];
-    setFillStack(stack);
+    const localStack: Point[] = [{ ...seedPoint }];
+    setFillStack([...localStack]);
 
     const stepFill = () => {
-      if (stack.length === 0) {
+      if (localStack.length === 0) {
         setIsFilling(false);
         return;
       }
 
-      const curr = stack.pop()!;
+      const curr = localStack.pop()!;
       const { x, y } = curr;
 
       if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) {
@@ -327,7 +351,7 @@ export const Demos: React.FC = () => {
 
           // Get neighbors
           const neighbors = getNeighbors(x, y);
-          neighbors.forEach(n => stack.push(n));
+          neighbors.forEach(n => localStack.push(n));
         }
       } else {
         // Flood fill: fill if it matches starting color (empty)
@@ -336,11 +360,11 @@ export const Demos: React.FC = () => {
           setFillGrid([...gridCopy]);
 
           const neighbors = getNeighbors(x, y);
-          neighbors.forEach(n => stack.push(n));
+          neighbors.forEach(n => localStack.push(n));
         }
       }
 
-      setFillStack([...stack]);
+      setFillStack([...localStack]);
       fillTimeoutRef.current = setTimeout(stepFill, fillSpeed);
     };
 
@@ -411,7 +435,7 @@ export const Demos: React.FC = () => {
     const cy = 12;
     circleSteps.forEach(s => {
       if (s.points) {
-        s.points.forEach((p: any) => {
+        s.points.forEach((p: Point) => {
           const px = p.x + cx;
           const py = p.y + cy;
           if (px >= 0 && px < 25 && py >= 0 && py < 25) {
@@ -429,7 +453,7 @@ export const Demos: React.FC = () => {
     const cy = 12;
     ellipseSteps.forEach(s => {
       if (s.points) {
-        s.points.forEach((p: any) => {
+        s.points.forEach((p: Point) => {
           const px = p.x + cx;
           const py = p.y + cy;
           if (px >= 0 && px < 25 && py >= 0 && py < 25) {
@@ -446,15 +470,15 @@ export const Demos: React.FC = () => {
       
       {/* Sub tabs navigation */}
       <div className="flex border-b border-slate-200 space-x-4">
-        {[
+        {([
           { id: 'line', label: 'Line Drawing' },
           { id: 'circle', label: 'Circle Drawing' },
           { id: 'ellipse', label: 'Ellipse Drawing' },
           { id: 'fill', label: 'Region Filling' }
-        ].map((subTab) => (
+        ] as const).map((subTab) => (
           <button
             key={subTab.id}
-            onClick={() => setActiveSubTab(subTab.id as any)}
+            onClick={() => setActiveSubTab(subTab.id)}
             className={`pb-2.5 text-sm font-semibold border-b-2 transition-all ${
               activeSubTab === subTab.id
                 ? 'border-aast-navy text-aast-navy'
@@ -476,12 +500,12 @@ export const Demos: React.FC = () => {
               <h3 className="font-bold text-aast-navy text-sm">Line Parameters</h3>
               
               <div className="grid grid-cols-4 gap-3">
-                {['x1', 'y1', 'x2', 'y2'].map((key) => (
+                {(['x1', 'y1', 'x2', 'y2'] as const).map((key) => (
                   <div key={key}>
                     <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{key}</label>
                     <input
                       type="number"
-                      value={(lineParams as any)[key]}
+                      value={lineParams[key]}
                       onChange={(e) => setLineParams({ ...lineParams, [key]: parseInt(e.target.value) || 0 })}
                       className="w-full text-xs font-semibold px-2 py-1 border border-slate-200 rounded focus:border-aast-navy"
                     />
@@ -586,12 +610,12 @@ export const Demos: React.FC = () => {
               <h3 className="font-bold text-aast-navy text-sm">Circle Parameters (Midpoint Circle)</h3>
               
               <div className="grid grid-cols-3 gap-3">
-                {['xc', 'yc', 'r'].map((key) => (
+                {(['xc', 'yc', 'r'] as const).map((key) => (
                   <div key={key}>
                     <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{key}</label>
                     <input
                       type="number"
-                      value={(circleParams as any)[key]}
+                      value={circleParams[key]}
                       onChange={(e) => setCircleParams({ ...circleParams, [key]: parseInt(e.target.value) || 0 })}
                       className="w-full text-xs font-semibold px-2 py-1 border border-slate-200 rounded focus:border-aast-navy"
                     />
@@ -619,8 +643,8 @@ export const Demos: React.FC = () => {
                         <td className="p-2 font-semibold text-slate-500">{step.k}</td>
                         <td className="p-2 font-mono">{step.pk}</td>
                         <td className="p-2 font-mono font-bold text-aast-navy">({step.x}, {step.y})</td>
-                        <td className="p-2 font-mono text-[9px] text-slate-500 leading-tight max-w-[200px] truncate" title={step.points.map((p: any) => `(${p.x},${p.y})`).join(', ')}>
-                          {step.points.map((p: any) => `(${p.x},${p.y})`).join(', ')}
+                        <td className="p-2 font-mono text-[9px] text-slate-500 leading-tight max-w-[200px] truncate" title={step.points.map((p: Point) => `(${p.x},${p.y})`).join(', ')}>
+                          {step.points.map((p: Point) => `(${p.x},${p.y})`).join(', ')}
                         </td>
                       </tr>
                     ))}
@@ -664,12 +688,12 @@ export const Demos: React.FC = () => {
               <h3 className="font-bold text-aast-navy text-sm">Ellipse Parameters (Midpoint Ellipse)</h3>
               
               <div className="grid grid-cols-4 gap-3">
-                {['xc', 'yc', 'rx', 'ry'].map((key) => (
+                {(['xc', 'yc', 'rx', 'ry'] as const).map((key) => (
                   <div key={key}>
                     <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{key}</label>
                     <input
                       type="number"
-                      value={(ellipseParams as any)[key]}
+                      value={ellipseParams[key]}
                       onChange={(e) => setEllipseParams({ ...ellipseParams, [key]: parseInt(e.target.value) || 0 })}
                       className="w-full text-xs font-semibold px-2 py-1 border border-slate-200 rounded focus:border-aast-navy"
                     />
@@ -700,7 +724,7 @@ export const Demos: React.FC = () => {
                         <td className="p-2 font-mono">{step.pk.toFixed(1)}</td>
                         <td className="p-2 font-mono font-bold text-aast-navy">({step.x}, {step.y})</td>
                         <td className="p-2 font-mono text-[9px] text-slate-400 truncate max-w-[150px]">
-                          {step.points.map((p: any) => `(${p.x},${p.y})`).join(' ')}
+                          {step.points.map((p: Point) => `(${p.x},${p.y})`).join(' ')}
                         </td>
                       </tr>
                     ))}

@@ -49,9 +49,9 @@ export default defineConfig({
                   res.writeHead(400, { 'Content-Type': 'application/json' });
                   res.end(JSON.stringify({ error: 'Forbidden file update' }));
                 }
-              } catch (error: any) {
+              } catch (error: unknown) {
                 res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: error.message }));
+                res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
               }
             });
           } else {
