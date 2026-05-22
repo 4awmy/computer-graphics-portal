@@ -1,0 +1,265 @@
+[
+  {
+    "id": "lec1",
+    "week": "Week 01",
+    "title": "Introduction to Computer Graphics",
+    "description": "Overview of computer graphics, applications, and basic video display devices including Cathode Ray Tubes (CRT), Raster-Scan, and Random-Scan displays.",
+    "pdfUrl": "Lectures/Week 01 - lec1_introduction.pdf",
+    "concepts": [
+      "Computer Graphics definition",
+      "Graphics Applications",
+      "Cathode Ray Tubes (CRT) structure",
+      "Raster-Scan Displays vs. Random-Scan Displays"
+    ],
+    "keyDetails": [
+      {
+        "title": "Key Applications",
+        "content": "User Interfaces (GUI), Presentation Graphics, Computer Art, Entertainment (Movies/Games), Education & Training, Scientific Visualization, Image Processing, and Computer-Aided Design (CAD)."
+      },
+      {
+        "title": "CRT Working Principle",
+        "content": "An electron gun emits an electron beam through focusing and deflection systems to strike a phosphor-coated screen, creating light. The refresh rate (typically 60-80 Hz) keeps the image from flickering."
+      },
+      {
+        "title": "Raster-Scan vs. Random-Scan",
+        "content": "Raster-Scan sweeps the electron beam row by row from top to bottom, turning the beam on/off to draw pixels based on a frame buffer. Random-Scan (vector/stroke-writing) directs the electron beam only to the parts of the screen where lines are to be drawn, yielding smooth lines but struggling with complex solid shapes."
+      }
+    ]
+  },
+  {
+    "id": "lec2",
+    "week": "Week 02",
+    "title": "Graphics Software and Polygon Filling",
+    "description": "Introduction to OpenGL primitives and filling algorithms like Scan-Line, Boundary-Fill, and Flood-Fill with 4/8-connected logic.",
+    "pdfUrl": "Lectures/Week 02 - lec2_graphics sw.pdf",
+    "concepts": [
+      "Graphics Software standards (OpenGL, WebGL)",
+      "OpenGL geometric primitives (GL_POINTS, GL_LINES, GL_POLYGON)",
+      "Boundary-Fill algorithm",
+      "Flood-Fill algorithm",
+      "4-connected vs. 8-connected neighbors"
+    ],
+    "keyDetails": [
+      {
+        "title": "OpenGL Primitives",
+        "content": "OpenGL uses vertex coordinates to define shape primitives: GL_POINTS, GL_LINES, GL_LINE_STRIP (connected lines), GL_LINE_LOOP (closed loop), GL_TRIANGLES, GL_QUADS, and GL_POLYGON (general convex filled polygon)."
+      },
+      {
+        "title": "Boundary-Fill Algorithm",
+        "content": "A recursive algorithm that starts at an interior 'seed' point and colors outward pixel-by-pixel until a boundary color is encountered. Standard code checks: if pixel color is not the border color AND not the fill color, paint it and recurse."
+      },
+      {
+        "title": "Flood-Fill Algorithm",
+        "content": "Similar to Boundary-Fill, but replaces an entire connected region of a specific 'interior' color with a new color. Recurses outward checking if the current pixel is the target old color."
+      },
+      {
+        "title": "4-Connected vs. 8-Connected",
+        "content": "4-Connected checks only immediate horizontal and vertical neighbors (left, right, up, down). 8-Connected checks horizontal, vertical, and diagonal neighbors. 8-Connected fill is required to fill regions with diagonal boundaries to prevent colors leaking through small diagonal gaps."
+      }
+    ]
+  },
+  {
+    "id": "lec3",
+    "week": "Week 03",
+    "title": "Graphics Hardware",
+    "description": "Deep dive into raster-scan system architecture, video controllers, display processors, and flat panel technology.",
+    "pdfUrl": "Lectures/Week 03 - lec3_graphics hw.pdf",
+    "concepts": [
+      "Raster-Scan System Architecture",
+      "Frame Buffer (color depth and resolution)",
+      "Video Controller & Display Processor",
+      "Flat Panel Displays (LCD, LED, Plasma)",
+      "Interactive Input Devices"
+    ],
+    "keyDetails": [
+      {
+        "title": "Frame Buffer",
+        "content": "A dedicated memory area storing the intensity/color value of each pixel on the screen. Resolution determines the number of pixels. Color depth (bits per pixel) determines available colors: 1-bit is black & white, 8-bit is 256 colors, 24-bit is true color (16.7 million colors)."
+      },
+      {
+        "title": "Video Controller",
+        "content": "A hardware component that continuously reads the frame buffer at the refresh rate (e.g. 60 Hz) and outputs the analog signals (or digital) to control the display deflections and beam intensities."
+      },
+      {
+        "title": "Display Processor",
+        "content": "Also called a graphics card/GPU. It offloads graphics commands from the CPU, performing rasterization (converting geometric shapes into frame buffer pixels) and managing display coordinate translations."
+      }
+    ]
+  },
+  {
+    "id": "lec4",
+    "week": "Week 04",
+    "title": "Design of Line Algorithms",
+    "description": "Analysis of line rendering algorithms, comparing the Direct Scan, Digital Differential Analyzer (DDA), and Bresenham's line algorithm.",
+    "pdfUrl": "Lectures/Week 04 - lec4_line.pdf",
+    "concepts": [
+      "Direct Scan Conversion (y = mx + c)",
+      "DDA Line Drawing Algorithm",
+      "Bresenham's Line Drawing Algorithm",
+      "Decision Parameters and derivation"
+    ],
+    "keyDetails": [
+      {
+        "title": "Direct Scan Conversion",
+        "content": "Calculates y = mx + c for each step. Highly inefficient because it requires floating-point multiplication and rounding for every single pixel plotted."
+      },
+      {
+        "title": "DDA Line Algorithm",
+        "content": "An incremental algorithm. Calculates dy and dx. If slope |m| <= 1, step x by 1 and increment y by m (y_new = y_old + m). If |m| > 1, step y by 1 and increment x by 1/m. Eliminates multiplication, but still requires slow floating-point addition and rounding on each step."
+      },
+      {
+        "title": "Bresenham's Line Algorithm",
+        "content": "An efficient algorithm that uses only integer addition and subtraction. It calculates a decision parameter P_k at each step to determine whether to increment the other coordinate. For slope 0 <= m <= 1: Start parameter P_0 = 2dy - dx. At each step, if P_k < 0, plot (x+1, y) and P_{k+1} = P_k + 2dy. If P_k >= 0, plot (x+1, y+1) and P_{k+1} = P_k + 2dy - 2dx."
+      }
+    ]
+  },
+  {
+    "id": "lec5",
+    "week": "Week 05",
+    "title": "Design of Circle Algorithms",
+    "description": "Derivation and execution of the Midpoint Circle Drawing algorithm using 8-way coordinate symmetry.",
+    "pdfUrl": "Lectures/Week 05 - lec5_circle.pdf",
+    "concepts": [
+      "Polar coordinate circle mapping",
+      "8-Way Symmetry of a circle",
+      "Midpoint Circle Drawing Algorithm",
+      "Integer-based decision parameter updating"
+    ],
+    "keyDetails": [
+      {
+        "title": "8-Way Symmetry",
+        "content": "A circle is symmetrical about the axes and diagonals. For any calculated point (x, y) in the first octant (x from 0 to y=r/sqrt(2)), we can mirror it to obtain 7 other points: (y, x), (-y, x), (-x, y), (-x, -y), (-y, -x), (y, -x), and (x, -y). This saves 87.5% of computation!"
+      },
+      {
+        "title": "Midpoint Circle Algorithm",
+        "content": "Calculates pixels along a circle perimeter by selecting between the pixel closer to the inside or outside of the mathematical boundary. Initial decision parameter P_0 = 5/4 - r (approximated as 1 - r for integers). At each step: If P_k < 0, select pixel (x+1, y) and P_{k+1} = P_k + 2x + 3. If P_k >= 0, select pixel (x+1, y-1) and P_{k+1} = P_k + 2x - 2y + 5."
+      }
+    ]
+  },
+  {
+    "id": "lec6",
+    "week": "Week 06",
+    "title": "Design of Ellipse Algorithms",
+    "description": "Exploring Midpoint Ellipse Drawing algorithm, region boundaries, and 4-way symmetry mapping.",
+    "pdfUrl": "Lectures/Week 06 - lec6_ellipse.pdf",
+    "concepts": [
+      "4-Way Symmetry of an Ellipse",
+      "Midpoint Ellipse Algorithm",
+      "Region 1 vs Region 2 transitions",
+      "Ellipse decision parameters"
+    ],
+    "keyDetails": [
+      {
+        "title": "4-Way Symmetry",
+        "content": "Unlike circles, ellipses only have 4-way symmetry across the quadrant axes. A point (x, y) on the ellipse centered at (0,0) yields points (-x, y), (x, -y), and (-x, -y)."
+      },
+      {
+        "title": "Region 1 vs Region 2",
+        "content": "The ellipse slope changes from 0 to infinity. We divide the first quadrant into Region 1 (where tangent slope > -1, moving faster in x) and Region 2 (where tangent slope <= -1, moving faster in y). The boundary between them occurs when 2 * ry^2 * x >= 2 * rx^2 * y."
+      },
+      {
+        "title": "Midpoint Ellipse Algorithm Steps",
+        "content": "Region 1 initial parameter: p1_0 = ry^2 - rx^2 * ry + 1/4 * rx^2. In Region 1: if p1_k < 0, next is (x+1, y) and update p1_{k+1}. Else, next is (x+1, y-1). Transition to Region 2 when 2*ry^2*x >= 2*rx^2*y. Region 2 initial parameter: p2_0 = ry^2*(x_last + 0.5)^2 + rx^2*(y_last - 1)^2 - rx^2*ry^2. In Region 2: if p2_k > 0, next is (x, y-1). Else, next is (x+1, y-1)."
+      }
+    ]
+  },
+  {
+    "id": "lec8",
+    "week": "Week 08",
+    "title": "Spline Curves",
+    "description": "Understanding parametric curves, Bézier curves, B-Splines, and mathematical continuity (parametric and geometric).",
+    "pdfUrl": "Lectures/Week 08 - lec8_Spline.pdf",
+    "concepts": [
+      "Interpolation vs. Approximation splines",
+      "Parametric Continuity (C^0, C^1, C^2)",
+      "Geometric Continuity (G^0, G^1, G^2)",
+      "Bézier Curve properties & Bernstein polynomials",
+      "B-Splines local control"
+    ],
+    "keyDetails": [
+      {
+        "title": "Spline Definition",
+        "content": "A spline is a flexible curve that passes through a set of control points. Interpolation curves pass exactly through all control points. Approximation curves trace near the points to outline a smooth shape."
+      },
+      {
+        "title": "Continuity Types",
+        "content": "Parametric continuity: C^0 means curves join; C^1 means tangent vectors are equal at the joint (smooth transition); C^2 means acceleration/curvature is equal. Geometric continuity: G^0 means joint match; G^1 means tangent vectors point in same direction but have different magnitudes; G^2 means curvatures match proportionally."
+      },
+      {
+        "title": "Bézier Curves",
+        "content": "Defined by a set of control points P_0 to P_n. The curve is formulated as P(t) = Sum_{i=0}^n B_{i,n}(t) * P_i, where B_{i,n}(t) are Bernstein Polynomials. Key properties: always lies inside the convex hull of control points, starts at P_0 and ends at P_n, and is affine-invariant."
+      }
+    ]
+  },
+  {
+    "id": "lec9",
+    "week": "Week 09",
+    "title": "Basic 2D Transformations",
+    "description": "Introduction to spatial transformations: Translation, Scaling, Rotation, and the Homogeneous Coordinates system.",
+    "pdfUrl": "Lectures/Week 09 - lec9_Basic 2Dtransformation.pdf",
+    "concepts": [
+      "2D Translation, Scaling, and Rotation",
+      "Homogeneous Coordinates",
+      "Matrix Representation of Transformations"
+    ],
+    "keyDetails": [
+      {
+        "title": "Basic Equations",
+        "content": "Translation: x' = x + Tx, y' = y + Ty. Scaling: x' = x * Sx, y' = y * Sy. Rotation: x' = x * cos(O) - y * sin(O), y' = x * sin(O) + y * cos(O)."
+      },
+      {
+        "title": "Homogeneous Coordinates",
+        "content": "By adding a third dummy coordinate (h=1), 2D points are represented as [x, y, 1]. This turns translation (originally addition) into a matrix multiplication, allowing all transformations to be represented uniformly as 3x3 matrices and combined by matrix multiplication."
+      },
+      {
+        "title": "Matrix Representations",
+        "content": "Translation matrix: [[1, 0, Tx], [0, 1, Ty], [0, 0, 1]]. Scaling matrix: [[Sx, 0, 0], [0, Sy, 0], [0, 0, 1]]. Rotation matrix: [[cos(O), -sin(O), 0], [sin(O), cos(O), 0], [0, 0, 1]]."
+      }
+    ]
+  },
+  {
+    "id": "lec10",
+    "week": "Week 10",
+    "title": "Composite 2D Transformations",
+    "description": "Combining multiple 2D transformations: Rotation/Scaling about arbitrary points, Reflections, and Shear transformations.",
+    "pdfUrl": "Lectures/Week 10 - lec10_composite_2Dtransformation.pdf",
+    "concepts": [
+      "Composite Transformations & Matrix Concatenation",
+      "Rotation about an Arbitrary Pivot Point",
+      "Scaling relative to an Arbitrary Fixed Point",
+      "Reflection and Shear"
+    ],
+    "keyDetails": [
+      {
+        "title": "Arbitrary Pivot Rotation",
+        "content": "To rotate an object around any point (Xr, Yr) instead of the origin: 1. Translate the object so (Xr, Yr) matches the origin. 2. Perform rotation around origin. 3. Translate the object back to (Xr, Yr). Formulated as M = T(Xr, Yr) * R(O) * T(-Xr, -Yr)."
+      },
+      {
+        "title": "Reflection & Shear",
+        "content": "Reflection creates a mirror image across an axis (e.g. flipping x-sign reflects over y-axis). Shear distorts shape along an axis: X-shear shifts x-value proportionally to y (x' = x + Shx * y, y' = y)."
+      }
+    ]
+  },
+  {
+    "id": "lec11",
+    "week": "Week 11",
+    "title": "3D Transformations",
+    "description": "Extending coordinates to 3D. Matrix representations for 3D Translation, Scaling, and Rotation around coordinate and arbitrary axes.",
+    "pdfUrl": "Lectures/Week 11 - lec11_3Dtransformation.pdf",
+    "concepts": [
+      "3D Homogeneous coordinates [x, y, z, 1]",
+      "3D Translation & Scaling",
+      "3D Rotations (X-axis, Y-axis, Z-axis, and Arbitrary axis)"
+    ],
+    "keyDetails": [
+      {
+        "title": "3D Coordinates",
+        "content": "Points in 3D are represented by 4D vectors [x, y, z, 1] using homogeneous coordinates. Transformations are represented by 4x4 matrices."
+      },
+      {
+        "title": "3D Rotations",
+        "content": "Rotations around standard axes: Z-axis rotation is identical to 2D rotation in the XY plane. X-axis and Y-axis rotations are cyclic permutations. Rotation around an arbitrary 3D line involves translating the line to the origin, rotating it to align with a coordinate axis (using Euler angles), performing the rotation, and reversing all steps."
+      }
+    ]
+  }
+]
