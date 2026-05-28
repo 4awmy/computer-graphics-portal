@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Megaphone, Pin, ChevronRight, ExternalLink, Library, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lecture5Circle } from './lectures/Lecture5Circle';
+import { Lecture6Ellipse } from './lectures/Lecture6Ellipse';
 import {
   LineVisualizer,
   CircleVisualizer,
@@ -297,63 +299,69 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
 
         {/* Tab Contents */}
         {activeLectureViewTab === 'web' ? (
-          <div className="max-w-4xl mx-auto w-full space-y-6 animate-fade-in">
-            {/* Topic Title Summary Card */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center space-x-2">
-                <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-aast-navy-soft text-aast-navy">
-                  {selectedLec.week}
-                </span>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Interactive Web Lesson</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-aast-navy tracking-tight">{selectedLec.title}</h2>
-              <p className="text-sm text-slate-500 leading-relaxed">{selectedLec.description}</p>
-              
-              {/* Concept tags */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {selectedLec.concepts.map((concept, index) => (
-                  <span key={index} className="text-[10px] px-2.5 py-0.5 bg-slate-100 text-slate-650 font-bold rounded">
-                    {concept}
+          selectedLecId === 'lec5' ? (
+            <Lecture5Circle />
+          ) : selectedLecId === 'lec6' ? (
+            <Lecture6Ellipse />
+          ) : (
+            <div className="max-w-4xl mx-auto w-full space-y-6 animate-fade-in">
+
+              {/* Topic Title Summary Card */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <div className="flex items-center space-x-2">
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-aast-navy-soft text-aast-navy">
+                    {selectedLec.week}
                   </span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Interactive Web Lesson</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black text-aast-navy tracking-tight">{selectedLec.title}</h2>
+                <p className="text-sm text-slate-500 leading-relaxed">{selectedLec.description}</p>
+                
+                {/* Concept tags */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {selectedLec.concepts.map((concept, index) => (
+                    <span key={index} className="text-[10px] px-2.5 py-0.5 bg-slate-100 text-slate-650 font-bold rounded">
+                      {concept}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Lecture Notes and Formulas (GeeksforGeeks style articles) */}
+              <div className="space-y-6">
+                {selectedLec.keyDetails.map((detail, idx) => (
+                  <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 hover:shadow-md transition-shadow">
+                    <h3 className="text-lg font-bold text-aast-navy border-l-4 border-aast-gold pl-3 leading-snug">
+                      {detail.title}
+                    </h3>
+                    
+                    <div className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line font-medium prose max-w-none">
+                      {/* Render text with styled formula blocks when equations are present */}
+                      {detail.content.split('\n').map((line, lIdx) => {
+                        if (!line.trim()) return <div key={lIdx} className="h-2" />;
+                        
+                        const isEquation = line.includes('=') || line.includes('<=') || line.includes('>=') || line.includes(' m ') || line.trim().startsWith('P_') || line.trim().startsWith('X_') || line.trim().startsWith('Y_');
+                        const isCodeOrStep = line.trim().startsWith('-') || line.trim().match(/^\d+\./);
+                        
+                        if (isEquation && line.trim().length > 3) {
+                          return (
+                            <div key={lIdx} className="my-2 bg-slate-50 px-4 py-2.5 rounded-lg font-mono text-[11px] sm:text-xs text-aast-navy border border-slate-150 shadow-inner block max-w-full overflow-x-auto whitespace-pre">
+                              {line}
+                            </div>
+                          );
+                        }
+                        return (
+                          <p key={lIdx} className={`mb-1 ${isCodeOrStep ? 'text-slate-750 font-bold pl-2' : 'text-slate-650'}`}>
+                            {line}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-
-            {/* Lecture Notes and Formulas (GeeksforGeeks style articles) */}
-            <div className="space-y-6">
-              {selectedLec.keyDetails.map((detail, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-bold text-aast-navy border-l-4 border-aast-gold pl-3 leading-snug">
-                    {detail.title}
-                  </h3>
-                  
-                  <div className="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-line font-medium prose max-w-none">
-                    {/* Render text with styled formula blocks when equations are present */}
-                    {detail.content.split('\n').map((line, lIdx) => {
-                      if (!line.trim()) return <div key={lIdx} className="h-2" />;
-                      
-                      const isEquation = line.includes('=') || line.includes('<=') || line.includes('>=') || line.includes(' m ') || line.trim().startsWith('P_') || line.trim().startsWith('X_') || line.trim().startsWith('Y_');
-                      const isCodeOrStep = line.trim().startsWith('-') || line.trim().match(/^\d+\./);
-                      
-                      if (isEquation && line.trim().length > 3) {
-                        return (
-                          <div key={lIdx} className="my-2 bg-slate-50 px-4 py-2.5 rounded-lg font-mono text-[11px] sm:text-xs text-aast-navy border border-slate-150 shadow-inner block max-w-full overflow-x-auto whitespace-pre">
-                            {line}
-                          </div>
-                        );
-                      }
-                      return (
-                        <p key={lIdx} className={`mb-1 ${isCodeOrStep ? 'text-slate-750 font-bold pl-2' : 'text-slate-650'}`}>
-                          {line}
-                        </p>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
+          )
         ) : (
           /* PDF Slides Viewer Tab (WebView Iframe) */
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[750px] animate-fade-in">
@@ -373,28 +381,32 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
         )}
 
         {/* Global Demos & Practice Zone Card (Rendered below the active tab view) */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-black text-aast-navy border-b border-slate-100 pb-3 flex items-center space-x-2">
-            <FileText className="h-5 w-5 text-aast-gold" />
-            <span>Interactive Sandbox & Practice Zone</span>
-          </h3>
-          
-          {/* Render Demos */}
-          {renderLectureDemos(selectedLec.id)}
+        {(activeLectureViewTab !== 'web' || (selectedLecId !== 'lec5' && selectedLecId !== 'lec6')) && (
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hover:shadow-md transition-shadow">
 
-          {/* Practice redirection button */}
-          {showPracticeButton && (
-            <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => onNavigateToExercise && onNavigateToExercise(practiceExId)}
-                className="px-4 py-2.5 bg-aast-gold hover:bg-aast-gold-dark text-white font-bold text-xs rounded-lg shadow transition-colors flex items-center space-x-2"
-              >
-                <span>{practiceLabel}</span>
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-        </div>
+            <h3 className="text-lg font-black text-aast-navy border-b border-slate-100 pb-3 flex items-center space-x-2">
+              <FileText className="h-5 w-5 text-aast-gold" />
+              <span>Interactive Sandbox & Practice Zone</span>
+            </h3>
+            
+            {/* Render Demos */}
+            {renderLectureDemos(selectedLec.id)}
+
+            {/* Practice redirection button */}
+            {showPracticeButton && (
+              <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={() => onNavigateToExercise && onNavigateToExercise(practiceExId)}
+                  className="px-4 py-2.5 bg-aast-gold hover:bg-aast-gold-dark text-white font-bold text-xs rounded-lg shadow transition-colors flex items-center space-x-2"
+                >
+                  <span>{practiceLabel}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
 
       </div>
     </div>
