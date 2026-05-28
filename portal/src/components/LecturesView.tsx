@@ -393,7 +393,7 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
         )}
 
         {/* Global Demos & Practice Zone Card (Rendered below the active tab view) */}
-        {(activeLectureViewTab !== 'web' || !['lec1', 'lec2', 'lec3', 'lec4', 'lec5', 'lec6'].includes(selectedLecId)) && (
+        {(activeLectureViewTab !== 'web' || selectedLecId) && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hover:shadow-md transition-shadow">
 
 
