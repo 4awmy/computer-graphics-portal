@@ -84,7 +84,10 @@ export const AITutorSim: React.FC = () => {
     setErrorMsg(null);
 
     try {
-      const API_KEY = 'AIzaSyAWwURCLh4Zt-JKiZoEK1vp-vnyZNikMmA';
+      const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!API_KEY) {
+        throw new Error("Missing VITE_GEMINI_API_KEY. Please add it to your .env file.");
+      }
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
       // Convert messages to Gemini format (roles must be user or model)
