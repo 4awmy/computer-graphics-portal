@@ -211,20 +211,22 @@ export const Lecture1Intro: React.FC = () => {
           ))}
         </div>
         
-        <div className="grid grid-cols-2 gap-4 mt-8">
+        <h4 className="font-bold text-lg mb-4 mt-8">Operation Modes</h4>
+        <div className="grid grid-cols-2 gap-4 mt-2">
            <div className="bg-slate-800 text-white p-5 rounded-2xl shadow-lg">
              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mode 1</h5>
              <p className="font-black text-lg">Passive Graphics</p>
-             <p className="text-[10px] text-slate-400 mt-2">Zero user intervention. Data is directly mapped to the display surface.</p>
+             <p className="text-[10px] text-slate-400 mt-2">Application data is directly mapped to a display surface with zero user intervention.</p>
            </div>
            <div className="bg-aast-navy text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
              <div className="absolute top-0 right-0 p-1 bg-aast-gold text-aast-navy text-[8px] font-black uppercase tracking-tighter rounded-bl-lg">Most Common</div>
              <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mode 2</h5>
              <p className="font-black text-lg text-aast-gold">Interactive Graphics</p>
-             <p className="text-[10px] text-slate-300 mt-2">Users dynamically modify visual components via input devices (mouse, stylus).</p>
+             <p className="text-[10px] text-slate-300 mt-2">The system allows users to dynamically modify visual components via input devices (mice, styluses).</p>
            </div>
         </div>
       </Section>
+
 
       <Section title="3. Digital Image Fundamentals">
         <p>An image is formally defined as a 2D light intensity function <code>f(x,y)</code>, where x and y denote spatial coordinates. The value of <code>f</code> at any point is proportional to the brightness or gray level.</p>

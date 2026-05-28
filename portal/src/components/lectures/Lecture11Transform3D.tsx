@@ -74,8 +74,6 @@ const Transform3DVisualizer = () => {
     });
   }, [type, val, axis]);
 
-  const viewWidth = 20, viewHeight = 20;
-
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm my-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -295,7 +293,27 @@ export const Lecture11Transform3D: React.FC = () => {
            <Equation>P' = (Mn · ... · M2 · M1) · P</Equation>
            <p className="text-xs text-slate-300 italic">M1 is applied first, Mn is applied last.</p>
         </div>
+
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm group">
+           <div className="flex justify-between items-center mb-6">
+              <p className="font-black text-aast-navy text-sm uppercase tracking-wider">Sample Pipeline Problem</p>
+              <span className="px-2 py-1 bg-purple-100 text-purple-700 text-[10px] font-black rounded uppercase">Exam Style</span>
+           </div>
+           <p className="text-sm text-slate-600 mb-4 font-bold">Construct the composite transformation matrix for the following sequence:</p>
+           <ol className="list-decimal pl-6 text-xs text-slate-500 space-y-1 mb-6">
+              <li>Translate along Y by distance <code>a</code>: <code>T(0, a, 0)</code></li>
+              <li>Rotate around X-axis by <code>90°</code>: <code>Rx(90°)</code></li>
+              <li>Translate along Z by distance <code>a</code>: <code>T(0, 0, a)</code></li>
+              <li>Rotate around Y-axis by <code>90°</code>: <code>Ry(90°)</code></li>
+           </ol>
+           <div className="bg-slate-50 p-5 rounded-2xl">
+              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 text-center">Mathematical Ordering Expression</p>
+              <Equation>M_composite = Ry(90°) · T(0, 0, a) · Rx(90°) · T(0, a, 0)</Equation>
+              <p className="text-[10px] text-slate-400 mt-4 italic leading-relaxed text-center">Evaluating this sequence from right to left combines translation vectors and rotational coefficients into a unified matrix.</p>
+           </div>
+        </div>
       </Section>
+
     </div>
   );
 };
