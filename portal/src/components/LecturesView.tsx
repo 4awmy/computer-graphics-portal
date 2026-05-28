@@ -9,6 +9,7 @@ import { Lecture6Ellipse } from './lectures/Lecture6Ellipse';
 import { Lecture8Spline } from './lectures/Lecture8Spline';
 import { Lecture9BasicTransform } from './lectures/Lecture9BasicTransform';
 import { Lecture10CompositeTransform } from './lectures/Lecture10CompositeTransform';
+import { Lecture11Transform3D } from './lectures/Lecture11Transform3D';
 import {
   LineVisualizer,
   CircleVisualizer,
@@ -71,6 +72,7 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
       case 'lec8': return <Lecture8Spline />;
       case 'lec9': return <Lecture9BasicTransform />;
       case 'lec10': return <Lecture10CompositeTransform />;
+      case 'lec11': return <Lecture11Transform3D />;
       default: return null;
     }
   };
