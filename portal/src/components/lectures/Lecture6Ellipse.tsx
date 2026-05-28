@@ -273,24 +273,60 @@ export const Lecture6Ellipse: React.FC = () => {
       </header>
 
       <Section title="1. Equation of an Ellipse">
-        <p>Consider an ellipse centered at the origin, <code className="bg-slate-100 px-1 rounded">(x_c, y_c) = (0,0)</code>:</p>
-        <Equation>(x / a)² + (y / b)² = 1</Equation>
-        <p>In most graphics literature, we denote the semi-major and semi-minor axes as <code>rx</code> and <code>ry</code> (or <code>a</code> and <code>b</code>).</p>
-        <p>We can define the implicit ellipse function as:</p>
-        <Equation>f_ellipse(x, y) = ry² x² + rx² y² - rx² ry²</Equation>
-        <ul className="list-disc pl-6 space-y-1 text-slate-700">
-          <li><strong>f(x, y) {"<"} 0:</strong> (x,y) is inside the ellipse.</li>
-          <li><strong>f(x, y) {"=="} 0:</strong> (x,y) is exactly on the ellipse boundary.</li>
-          <li><strong>f(x, y) {">"} 0:</strong> (x,y) is outside the ellipse.</li>
-        </ul>
+        <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p>Consider an ellipse centered at the origin, <code className="bg-slate-100 px-1 rounded">(x_c, y_c) = (0,0)</code>:</p>
+            <Equation>(x / a)² + (y / b)² = 1</Equation>
+            <p>In most graphics literature, we denote the semi-major and semi-minor axes as <code>rx</code> and <code>ry</code> (or <code>a</code> and <code>b</code>).</p>
+            <p className="mt-4">We can define the implicit ellipse function as:</p>
+            <Equation>f_ellipse(x, y) = ry² x² + rx² y² - rx² ry²</Equation>
+            <ul className="list-disc pl-6 space-y-1 text-slate-700 mt-2">
+              <li><span className="text-emerald-500 font-bold">f(x, y) {"<"} 0:</span> (x,y) is inside the ellipse.</li>
+              <li><span className="text-yellow-500 font-bold">f(x, y) {"=="} 0:</span> (x,y) is exactly on the ellipse boundary.</li>
+              <li><span className="text-blue-500 font-bold">f(x, y) {">"} 0:</span> (x,y) is outside the ellipse.</li>
+            </ul>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4 aspect-video flex items-center justify-center relative shadow-inner">
+            <svg viewBox="-20 -15 40 30" className="w-full h-full transform scale-y-[-1]">
+              <ellipse cx="0" cy="0" rx="15" ry="10" fill="none" stroke="#eab308" strokeWidth="0.5" />
+              {/* Inside */}
+              <circle cx="-5" cy="4" r="1" fill="#10b981" />
+              <text x="-5" y="-6" fill="#10b981" fontSize="3" textAnchor="middle" transform="scale(1, -1)">f{"<"}0</text>
+              {/* On boundary */}
+              <circle cx="15" cy="0" r="1" fill="#eab308" />
+              <text x="15" y="4" fill="#eab308" fontSize="3" textAnchor="middle" transform="scale(1, -1)">f=0</text>
+              {/* Outside */}
+              <circle cx="10" cy="12" r="1" fill="#3b82f6" />
+              <text x="10" y="-14" fill="#3b82f6" fontSize="3" textAnchor="middle" transform="scale(1, -1)">f{">"}0</text>
+            </svg>
+          </div>
+        </div>
       </Section>
 
       <Section title="2. Properties & Parametric Form">
-        <p>The equation is simplified if the ellipse axis is parallel to the coordinate axis:</p>
-        <Equation>((x - x_c) / rx)² + ((y - y_c) / ry)² = 1</Equation>
-        <p>The parametric form is:</p>
-        <Equation>x = x_c + rx · cos(θ){'\n'}y = y_c + ry · sin(θ)</Equation>
-        <p>Just like circles, calculating trigonometric functions (cos, sin) at each step is computationally expensive. Therefore, we use an incremental integer approach.</p>
+        <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p>The equation is simplified if the ellipse axis is parallel to the coordinate axis:</p>
+            <Equation>((x - x_c) / rx)² + ((y - y_c) / ry)² = 1</Equation>
+            <p className="mt-4">The parametric form is:</p>
+            <Equation>x = x_c + rx · cos(θ){'\n'}y = y_c + ry · sin(θ)</Equation>
+            <p className="mt-4 text-slate-700">Just like circles, calculating trigonometric functions (cos, sin) at each step is computationally expensive. Therefore, we use an incremental integer approach.</p>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4 aspect-video flex items-center justify-center relative shadow-inner">
+            <svg viewBox="-20 -15 40 30" className="w-full h-full transform scale-y-[-1]">
+              <ellipse cx="0" cy="0" rx="15" ry="10" fill="none" stroke="#334155" strokeWidth="0.5" strokeDasharray="1 1" />
+              {/* Polar points */}
+              {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(theta => {
+                const rad = theta * Math.PI / 180;
+                const x = 15 * Math.cos(rad);
+                const y = 10 * Math.sin(rad);
+                return <circle key={theta} cx={x} cy={y} r="1" fill="#ec4899" />;
+              })}
+              <line x1="0" y1="0" x2={15 * Math.cos(Math.PI/6)} y2={10 * Math.sin(Math.PI/6)} stroke="#475569" strokeWidth="0.3" />
+              <text x="5" y="-2" fill="#94a3b8" fontSize="3" transform="scale(1, -1)">θ</text>
+            </svg>
+          </div>
+        </div>
       </Section>
 
       <Section title="3. Two-Region Analysis">

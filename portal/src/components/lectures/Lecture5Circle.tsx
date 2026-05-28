@@ -281,15 +281,38 @@ export const Lecture5Circle: React.FC = () => {
       </header>
 
       <Section title="1. Output Primitives">
-        <p>Graphics programming packages provide functions to describe a scene in terms of basic geometric structures referred to as <strong>Output Primitives</strong>.</p>
-        <p>Output primitives include:</p>
-        <ul className="list-disc pl-6 space-y-1 text-slate-700">
-          <li>Points</li>
-          <li>Lines</li>
-          <li><strong>Circles</strong></li>
-          <li>Spline curves</li>
-        </ul>
-        <p>Output primitives can be used to present more complex objects on the screen.</p>
+        <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p>Graphics programming packages provide functions to describe a scene in terms of basic geometric structures referred to as <strong>Output Primitives</strong>.</p>
+            <p className="mt-4">Output primitives include:</p>
+            <ul className="list-disc pl-6 space-y-1 text-slate-700">
+              <li>Points</li>
+              <li>Lines</li>
+              <li><strong>Circles</strong></li>
+              <li>Spline curves</li>
+            </ul>
+            <p className="mt-4">Output primitives can be used to present more complex objects on the screen.</p>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4 aspect-video flex flex-col items-center justify-center relative shadow-inner">
+             <svg viewBox="0 0 100 60" className="w-full h-full">
+               {/* Point */}
+               <circle cx="20" cy="20" r="1.5" fill="#eab308" />
+               <text x="20" y="30" fill="#94a3b8" fontSize="4" textAnchor="middle">Point</text>
+               
+               {/* Line */}
+               <line x1="40" y1="15" x2="60" y2="25" stroke="#3b82f6" strokeWidth="1" strokeLinecap="round" />
+               <text x="50" y="30" fill="#94a3b8" fontSize="4" textAnchor="middle">Line</text>
+               
+               {/* Circle */}
+               <circle cx="80" cy="20" r="6" fill="none" stroke="#ef4444" strokeWidth="1" />
+               <text x="80" y="30" fill="#94a3b8" fontSize="4" textAnchor="middle">Circle</text>
+
+               {/* Spline */}
+               <path d="M 20 45 Q 35 35 50 45 T 80 45" fill="none" stroke="#10b981" strokeWidth="1" />
+               <text x="50" y="55" fill="#94a3b8" fontSize="4" textAnchor="middle">Spline Curve</text>
+             </svg>
+          </div>
+        </div>
       </Section>
 
       <Section title="2. Simple Circle Drawing: Naïve Algorithm">
@@ -319,9 +342,30 @@ export const Lecture5Circle: React.FC = () => {
       </Section>
 
       <Section title="3. Polar Coordinates Algorithm">
-        <p>Another approach is to use parametric polar equations:</p>
-        <Equation>x = xc + r·cos(θ){'\n'}y = yc + r·sin(θ)</Equation>
-        <p><strong>Disadvantage:</strong> This is extremely time consuming due to the trigonometric computations (sin, cos) required for every single point along the perimeter. Furthermore, uniform step sizes in θ result in non-uniform pixel spacing.</p>
+        <div className="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <p>Another approach is to use parametric polar equations:</p>
+            <Equation>x = xc + r·cos(θ){'\n'}y = yc + r·sin(θ)</Equation>
+            <p className="mt-4 text-slate-700"><strong>Disadvantage:</strong> This is extremely time consuming due to the trigonometric computations (sin, cos) required for every single point along the perimeter.</p>
+            <p className="mt-2 text-slate-700">Furthermore, uniform step sizes in θ result in non-uniform pixel spacing, as shown in the diagram.</p>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4 aspect-square flex flex-col items-center justify-center relative shadow-inner">
+            <svg viewBox="0 0 40 40" className="w-full h-full transform scale-y-[-1]">
+              <path d="M 20 0 A 20 20 0 0 1 0 20" fill="none" stroke="#334155" strokeWidth="0.2" />
+              {[0, 10, 20, 30, 40, 50, 60, 70, 80, 90].map((theta, i) => {
+                const rad = theta * Math.PI / 180;
+                const x = 20 * Math.cos(rad);
+                const y = 20 * Math.sin(rad);
+                return (
+                  <g key={i}>
+                    <line x1="0" y1="0" x2={x} y2={y} stroke="#475569" strokeWidth="0.1" strokeDasharray="0.5" />
+                    <circle cx={x} cy={y} r="0.8" fill="#ec4899" />
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </div>
       </Section>
 
       <Section title="4. Eight-Way Symmetry">
