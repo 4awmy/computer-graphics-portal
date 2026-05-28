@@ -429,6 +429,77 @@ export const Lecture5Circle: React.FC = () => {
         <MidpointTraceDemo />
         <p className="mt-6">After calculating the first octant, you apply the 8-way symmetry mirroring to obtain all points for Quadrant 1, and so on. If the center was <code>(4, 4)</code> instead of <code>(0, 0)</code>, you would simply add 4 to every calculated X and Y coordinate before plotting.</p>
       </Section>
+
+      <Section title="7. Circle Sandbox (Full Visualizer)">
+        <p className="mb-4 text-slate-600 italic text-sm">Experiment with the full Midpoint Circle algorithm. Adjust the radius and center to see the final plotted grid.</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-inner">
+           <div className="max-w-2xl mx-auto">
+              <CircleSandbox />
+           </div>
+        </div>
+      </Section>
     </div>
   );
 };
+
+// --- Full Sandbox Component (The "Old Demo") ---
+const CircleSandbox = () => {
+  const [radius, setRadius] = useState(12);
+  const [xc, setXc] = useState(0);
+  const [yc, setYc] = useState(0);
+
+  const points = useMemo(() => {
+    const pts: { x: number; y: number }[] = [];
+    let x = 0;
+    let y = radius;
+    let p = 1 - radius;
+
+    const plotSymmetry = (cx: number, cy: number, px: number, py: number) => {
+      pts.push({ x: cx + px, y: cy + py });
+      pts.push({ x: cx + py, y: cy + px });
+      pts.push({ x: cx - py, y: cy + px });
+      pts.push({ x: cx - px, y: cy + py });
+      pts.push({ x: cx - px, y: cy - py });
+      pts.push({ x: cx - py, y: cy - px });
+      pts.push({ x: cx + py, y: cy - px });
+      pts.push({ x: cx + px, y: cy - py });
+    };
+
+    plotSymmetry(xc, yc, x, y);
+
+    while (x < y) {
+      x++;
+      if (p < 0) {
+        p += 2 * x + 1;
+      } else {
+        y--;
+        p += 2 * (x - y) + 1;
+      }
+      plotSymmetry(xc, yc, x, y);
+    }
+    return pts;
+  }, [radius, xc, yc]);
+
+  const gs = radius + Math.abs(xc) + Math.abs(yc) + 5;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-2">
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">Radius</label><input type="number" value={radius} onChange={e => setRadius(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">xc</label><input type="number" value={xc} onChange={e => setXc(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">yc</label><input type="number" value={yc} onChange={e => setYc(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+      </div>
+      <div className="bg-slate-900 rounded-lg p-2 aspect-square flex items-center justify-center relative">
+         <svg viewBox={`${-gs} ${-gs} ${gs * 2} ${gs * 2}`} className="w-full h-full transform scale-y-[-1]">
+            <line x1={-gs} y1={0} x2={gs} y2={0} stroke="#334155" strokeWidth="0.1" />
+            <line x1={0} y1={-gs} x2={0} y2={gs} stroke="#334155" strokeWidth="0.1" />
+            {points.map((p, i) => (
+              <rect key={i} x={p.x - 0.4} y={p.y - 0.4} width="0.8" height="0.8" fill="#eab308" />
+            ))}
+            <circle cx={xc} cy={yc} r={radius} stroke="#f87171" strokeWidth="0.1" fill="none" strokeDasharray="0.2" />
+         </svg>
+      </div>
+    </div>
+  );
+};
+

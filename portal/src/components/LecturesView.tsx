@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { FileText, Megaphone, Pin, ChevronRight, ExternalLink, Library, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lecture1Intro } from './lectures/Lecture1Intro';
+import { Lecture2Software } from './lectures/Lecture2Software';
+import { Lecture3Hardware } from './lectures/Lecture3Hardware';
+import { Lecture4Line } from './lectures/Lecture4Line';
 import { Lecture5Circle } from './lectures/Lecture5Circle';
 import { Lecture6Ellipse } from './lectures/Lecture6Ellipse';
 import {
@@ -47,11 +51,24 @@ interface LecturesViewProps {
 
 export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announcements, onNavigateToExercise }) => {
   const [selectedLecId, setSelectedLecId] = useState<string>(lectures[0]?.id || '');
-  const [activeLectureViewTab, setActiveLectureViewTab] = useState<'web' | 'pdf'>('pdf'); // Default to PDF Slides
+  const [activeLectureViewTab, setActiveLectureViewTab] = useState<'web' | 'pdf'>('web'); // Default to Interactive Web Lesson
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [isAnnouncementsExpanded, setIsAnnouncementsExpanded] = useState<boolean>(true);
 
   const selectedLec = lectures.find(l => l.id === selectedLecId) || lectures[0];
+
+  const renderActiveLecture = () => {
+    switch (selectedLecId) {
+      case 'lec1': return <Lecture1Intro />;
+      case 'lec2': return <Lecture2Software />;
+      case 'lec3': return <Lecture3Hardware />;
+      case 'lec4': return <Lecture4Line />;
+      case 'lec5': return <Lecture5Circle />;
+      case 'lec6': return <Lecture6Ellipse />;
+      default: return null;
+    }
+  };
+
 
   const renderLectureDemos = (lecId: string) => {
     const numId = parseInt(String(lecId).replace(/\D/g, ''), 10);
@@ -299,13 +316,8 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
 
         {/* Tab Contents */}
         {activeLectureViewTab === 'web' ? (
-          selectedLecId === 'lec5' ? (
-            <Lecture5Circle />
-          ) : selectedLecId === 'lec6' ? (
-            <Lecture6Ellipse />
-          ) : (
+          renderActiveLecture() || (
             <div className="max-w-4xl mx-auto w-full space-y-6 animate-fade-in">
-
               {/* Topic Title Summary Card */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <div className="flex items-center space-x-2">
@@ -381,8 +393,9 @@ export const LecturesView: React.FC<LecturesViewProps> = ({ lectures, announceme
         )}
 
         {/* Global Demos & Practice Zone Card (Rendered below the active tab view) */}
-        {(activeLectureViewTab !== 'web' || (selectedLecId !== 'lec5' && selectedLecId !== 'lec6')) && (
+        {(activeLectureViewTab !== 'web' || !['lec1', 'lec2', 'lec3', 'lec4', 'lec5', 'lec6'].includes(selectedLecId)) && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hover:shadow-md transition-shadow">
+
 
             <h3 className="text-lg font-black text-aast-navy border-b border-slate-100 pb-3 flex items-center space-x-2">
               <FileText className="h-5 w-5 text-aast-gold" />

@@ -382,6 +382,94 @@ export const Lecture6Ellipse: React.FC = () => {
         </ul>
         <EllipseTraceDemo />
       </Section>
+
+      <Section title="6. Ellipse Sandbox (Full Visualizer)">
+        <p className="mb-4 text-slate-600 italic text-sm">Experiment with the full Midpoint Ellipse algorithm. Adjust rx, ry, and the center to see the final plotted grid.</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-inner">
+           <div className="max-w-2xl mx-auto">
+              <EllipseSandbox />
+           </div>
+        </div>
+      </Section>
     </div>
   );
 };
+
+// --- Full Sandbox Component ---
+const EllipseSandbox = () => {
+  const [rx, setRx] = useState(12);
+  const [ry, setRy] = useState(8);
+  const [xc, setXc] = useState(0);
+  const [yc, setYc] = useState(0);
+
+  const points = useMemo(() => {
+    const pts: { x: number; y: number }[] = [];
+    const rx2 = rx * rx;
+    const ry2 = ry * ry;
+
+    const plot4Symmetry = (cx: number, cy: number, px: number, py: number) => {
+      pts.push({ x: cx + px, y: cy + py });
+      pts.push({ x: cx - px, y: cy + py });
+      pts.push({ x: cx + px, y: cy - py });
+      pts.push({ x: cx - px, y: cy - py });
+    };
+
+    let x = 0;
+    let y = ry;
+    let p1 = ry2 - rx2 * ry + 0.25 * rx2;
+    let dx = 2 * ry2 * x;
+    let dy = 2 * rx2 * y;
+
+    while (dx < dy) {
+      plot4Symmetry(xc, yc, x, y);
+      x++;
+      dx += 2 * ry2;
+      if (p1 < 0) {
+        p1 += dx + ry2;
+      } else {
+        y--;
+        dy -= 2 * rx2;
+        p1 += dx - dy + ry2;
+      }
+    }
+
+    let p2 = ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2;
+    while (y >= 0) {
+      plot4Symmetry(xc, yc, x, y);
+      y--;
+      dy -= 2 * rx2;
+      if (p2 > 0) {
+        p2 += rx2 - dy;
+      } else {
+        x++;
+        dx += 2 * ry2;
+        p2 += dx - dy + rx2;
+      }
+    }
+    return pts;
+  }, [rx, ry, xc, yc]);
+
+  const gs = Math.max(rx, ry) + Math.max(Math.abs(xc), Math.abs(yc)) + 5;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-4 gap-2">
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">rx</label><input type="number" value={rx} onChange={e => setRx(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">ry</label><input type="number" value={ry} onChange={e => setRy(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">xc</label><input type="number" value={xc} onChange={e => setXc(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+        <div><label className="text-[10px] font-bold text-slate-500 uppercase">yc</label><input type="number" value={yc} onChange={e => setYc(Number(e.target.value))} className="w-full px-2 py-1 text-xs border rounded" /></div>
+      </div>
+      <div className="bg-slate-900 rounded-lg p-2 aspect-square flex items-center justify-center relative">
+         <svg viewBox={`${-gs} ${-gs} ${gs * 2} ${gs * 2}`} className="w-full h-full transform scale-y-[-1]">
+            <line x1={-gs} y1={0} x2={gs} y2={0} stroke="#334155" strokeWidth="0.1" />
+            <line x1={0} y1={-gs} x2={0} y2={gs} stroke="#334155" strokeWidth="0.1" />
+            {points.map((p, i) => (
+              <rect key={i} x={p.x - 0.4} y={p.y - 0.4} width="0.8" height="0.8" fill="#eab308" />
+            ))}
+            <ellipse cx={xc} cy={yc} rx={rx} ry={ry} stroke="#f87171" strokeWidth="0.1" fill="none" strokeDasharray="0.2" />
+         </svg>
+      </div>
+    </div>
+  );
+};
+
